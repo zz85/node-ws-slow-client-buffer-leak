@@ -1,0 +1,16 @@
+{
+  "name": "node-ws-slow-client-buffer-leak",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chart": "jstrace/chart",
+    "clear": "0.0.1",
+    "ws": "^1.0.1"
+  }
+}
