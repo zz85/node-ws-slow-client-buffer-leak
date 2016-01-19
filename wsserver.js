@@ -1,6 +1,6 @@
 var WebSocketServer = require('ws').Server
   , wss = new WebSocketServer({ port: 3000 });
-  
+
 var chart = require('chart');
 var clear = require('clear');
 var fake = require('./fake');
@@ -12,7 +12,7 @@ var sockets = new Set()
 wss.on('connection', function connection(ws) {
     sockets.add(ws);
     console.log('SOCKET', 'Connection')
-    
+
     var clearme;
     ws.on('close', function close() {
         console.log('SOCKET', 'disconnected');
@@ -23,7 +23,7 @@ wss.on('connection', function connection(ws) {
 
     clearme = setTimeout(fake_update, 0);
 
-    var start = Date.now(); 
+    var start = Date.now();
 
     // setTimeout( function destroySocket() {
     //     console.log('SOCKET', 'DESTROY')
@@ -40,10 +40,10 @@ wss.on('connection', function connection(ws) {
         if (Date.now() - start > 60 * 1.5 * 1000) {
             console.log('SOCKET stop sending')
         } else {
-            clearme = setTimeout(fake_update, timeout);    
+            clearme = setTimeout(fake_update, timeout);
         }
     }
-    
+
 });
 
 var data = [];
@@ -60,5 +60,12 @@ setInterval(function() {
     console.log('RSS', (mem.rss / 1024 / 1024).toFixed(2), 'MB' )
     console.log('HeapTotal', (mem.heapTotal / 1024 / 1024).toFixed(2), 'MB' )
     console.log('HeapUsed', (mem.heapUsed / 1024 / 1024).toFixed(2), 'MB' )
-    console.log( ((Date.now() - time) / 1000).toFixed(2), 's') 
+    console.log( ((Date.now() - time) / 1000).toFixed(2), 's');
+
+    var socketBufferSize = 0;
+    sockets.forEach( s => {
+        socketBufferSize += s._socket.bufferSize;
+    });
+
+    console.log('Socket Buffer Size', (socketBufferSize / 1024 / 1024).toFixed(2), 'MB' )
 }, 2000)

@@ -3,7 +3,7 @@ var net = require('net');
 var chart = require('chart');
 var clear = require('clear');
 var fake = require('./fake');
-   
+
 var FAKE = fake(512 * 1024);
 
 var sockets = new Set()
@@ -15,7 +15,7 @@ var server = net.createServer(function(socket) {
     // socket.on('message', function incoming(message) {
     // console.log('received: %s', message);
     // });
-    
+
     var clearme;
 
     function done() {
@@ -37,7 +37,7 @@ var server = net.createServer(function(socket) {
 
     clearme = setTimeout(fake_update, 0);
 
-    var start = Date.now(); 
+    var start = Date.now();
 
     // setTimeout( function destroySocket() {
     //     console.log('DESTROY')
@@ -54,7 +54,7 @@ var server = net.createServer(function(socket) {
         if (Date.now() - start > 60 * 1.5 * 1000) {
             console.log('SOCKET stop sending')
         } else {
-            clearme = setTimeout(fake_update, timeout);    
+            clearme = setTimeout(fake_update, timeout);
         }
     }
 });
@@ -74,5 +74,13 @@ setInterval(function() {
     console.log('RSS', (mem.rss / 1024 / 1024).toFixed(2), 'MB' )
     console.log('HeapTotal', (mem.heapTotal / 1024 / 1024).toFixed(2), 'MB' )
     console.log('HeapUsed', (mem.heapUsed / 1024 / 1024).toFixed(2), 'MB' )
-    console.log( ((Date.now() - time) / 1000).toFixed(2), 's') 
+    console.log( ((Date.now() - time) / 1000).toFixed(2), 's')
+    var socketBufferSize = 0;
+    sockets.forEach( s => {
+        socketBufferSize += s.bufferSize;
+    });
+
+    console.log('Socket Buffer Size', (socketBufferSize / 1024 / 1024).toFixed(2), 'MB' )
+
+
 }, 2000)
