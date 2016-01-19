@@ -31,8 +31,11 @@ function connect_one(i, target) {
         // do nothing
     });
 
+    ws.on('error', function(e) {
+        console.log('Error', e);
+    });
 
     ws.on('close', function() {
         console.log('Closed', i);
-    })
+    });
 }
