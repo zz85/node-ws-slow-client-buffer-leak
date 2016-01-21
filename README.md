@@ -1,12 +1,22 @@
 ## Node Ws Slow Client Buffer Leak
 
-This is to illustrate the effects of nodejs's RSS memory when connected with slow clients and whether memory gets reclaimed after clients disconnect.
+When my colleagues and I at [Zopim](https://zopim.com) did a series of load tests on our NodeJS servers,
+we observed the "Slow Clients" behaviour.
 
-To test this, you should run the server and clients on separate machines to introduce network latency and buffering. RSS will increase running simply with 200 clients for about 30 seconds. When clients are disconnected, the RSS does not fully recovers.
+The slow clients problem meant that when servers send data faster than clients can receive, the data has to be buffered somewhere.
+In our case the data was kept in queued at NodeJS socket layer (not flushed to the OS) leading to an increase of Node's RSS usage (in buffers outside V8 heap).
 
-One common solution for slow clients is to use a reverse proxy, or to back-pressure using streams/drain/pause/resume. What I'm hoping to find out here though is whether the increasing RSS is a known behaviour or a leak.
+One common solution is the "slow client" problem is to use a reverse proxy, or avoid sending overwhelmed clients by back-pressuring using streams/drain/pause/resume. 
+
+However the problem here is when the clients disconnected, a sizable amount of memory didn't seem to be freed leading to a seemingly increasing memory usage by Node.
+
+The test scripts here demostrate the issue. To test this, you should run the server and clients on separate machines to introduce network latency and buffering.
+
+I typically test with 200 clients for about 30 seconds.
 
 This issue was intially reported [on the ws repository](https://github.com/websockets/ws/issues/667) followed by [an issue on nodejs](https://github.com/nodejs/node/issues/4779).
+
+There is currently [a fix for the nodejs HTTP Parser Pool leak](https://github.com/nodejs/node/pull/4773) by @Nibbler999.
 
 Before killing clients.
 ![image](https://cloud.githubusercontent.com/assets/314997/12353695/02a51920-bbcc-11e5-8a9d-daefa5da038f.png)

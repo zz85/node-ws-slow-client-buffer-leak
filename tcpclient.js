@@ -19,7 +19,7 @@ for (var i = 0; i < connections; i++) {
 
 function connect_one(i, port, host) {
     var client = new net.Socket();
-    
+
     client.connect(port, host, function() {
         console.log('Connected!!', i);
     });
@@ -29,5 +29,9 @@ function connect_one(i, port, host) {
 
     client.on('close', function() {
         console.log('Closed', i);
+    })
+
+    client.on('error', function() {
+        console.log('Error', i);
     })
 }
