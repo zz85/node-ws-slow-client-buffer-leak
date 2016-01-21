@@ -1,5 +1,4 @@
-var WebSocketServer = require('ws').Server
-  , wss = new WebSocketServer({ port: 3000 });
+var http = require('http');
 
 var chart = require('chart');
 var clear = require('clear');
@@ -9,42 +8,47 @@ var FAKE = fake(512 * 1024);
 
 var sockets = new Set()
 
-wss.on('connection', function connection(ws) {
-    sockets.add(ws);
-    console.log('SOCKET', 'Connection')
+var port = 54321;
+
+http.createServer(handleRequest).listen(port);
+
+function handleRequest(request, response) {
+    sockets.add(response);
 
     var clearme;
-    ws.on('close', function close() {
-        console.log('SOCKET', 'disconnected');
-        sockets.delete(ws);
+    request.on('close', function close() {
+        console.log('disconnected');
+        sockets.delete(response);
         clearTimeout(clearme);
-        ws = null
+        response = null
     });
 
     clearme = setTimeout(fake_update, 0);
 
     var start = Date.now();
-
+    
+    response.writeHead(200, {});
+    
     // setTimeout( function destroySocket() {
-    //     console.log('SOCKET', 'DESTROY')
-    //     ws.close()
-    //     ws = null
+    //     console.log('DESTROY')
+    //     response.end()
+    //     response = null
     // }, 0.5 * 1000 * 60);
 
     function fake_update() {
         var fake_data = FAKE + fake(4);
-        if (ws) ws.send(fake_data);
+        if (response) response.write(fake_data);
 
         var timeout = 2000;
 
         if (Date.now() - start > 60 * 1.5 * 1000) {
-            console.log('SOCKET stop sending')
+            console.log('stop sending')
         } else {
             clearme = setTimeout(fake_update, timeout);
         }
     }
 
-});
+};
 
 var data = [];
 
@@ -64,7 +68,7 @@ setInterval(function() {
 
     var socketBufferSize = 0;
     sockets.forEach( s => {
-        socketBufferSize += s._socket.bufferSize;
+        socketBufferSize += s.bufferSize;
     });
 
     console.log('Socket Buffer Size', (socketBufferSize / 1024 / 1024).toFixed(2), 'MB' )
