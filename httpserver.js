@@ -10,15 +10,12 @@ var sockets = new Set()
 
 var port = 54321;
 
-http.createServer(handleRequest).listen(port);
+var server = http.createServer(handleRequest).listen(port);
 
 function handleRequest(request, response) {
-    sockets.add(response);
-
     var clearme;
     request.on('close', function close() {
         console.log('disconnected');
-        sockets.delete(response);
         clearTimeout(clearme);
         response = null
     });
@@ -28,14 +25,7 @@ function handleRequest(request, response) {
     var start = Date.now();
     
     response.writeHead(200, {});
-    
-    // setTimeout( function destroySocket() {
-    //     console.log('DESTROY')
-    //     response.end()
-    //     response = null
-    // }, 0.5 * 1000 * 60);
-
-    function fake_update() {
+        function fake_update() {
         var fake_data = FAKE + fake(4);
         if (response) response.write(Buffer(fake_data));
 
@@ -49,6 +39,14 @@ function handleRequest(request, response) {
     }
 
 };
+
+server.on('connection', socket => {
+    sockets.add(socket);
+
+    socket.on('close', function close() {
+        sockets.delete(socket);
+    });
+});
 
 var data = [];
 
@@ -71,5 +69,6 @@ setInterval(function() {
         socketBufferSize += s.bufferSize;
     });
 
-    console.log('Socket Buffer Size', (socketBufferSize / 1024 / 1024).toFixed(2), 'MB' )
+    console.log('Socket Buffer Size', (socketBufferSize / 1024 / 1024).toFixed(2), 'MB' );
+    console.log('Running HTTP Server on port ' + port);
 }, 2000)

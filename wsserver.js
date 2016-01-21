@@ -1,5 +1,6 @@
+var PORT = 3000;
 var WebSocketServer = require('ws').Server
-  , wss = new WebSocketServer({ port: 3000 });
+  , wss = new WebSocketServer({ port: PORT });
 
 var chart = require('chart');
 var clear = require('clear');
@@ -68,4 +69,5 @@ setInterval(function() {
     });
 
     console.log('Socket Buffer Size', (socketBufferSize / 1024 / 1024).toFixed(2), 'MB' )
+    console.log('Running WS Server on port ' + PORT);
 }, 2000)

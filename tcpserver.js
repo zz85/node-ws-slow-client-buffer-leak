@@ -59,13 +59,15 @@ var server = net.createServer(function(socket) {
     }
 });
 
-server.listen(12345, '0.0.0.0')
+var PORT = 12345;
+var LISTEN = '0.0.0.0';
+server.listen(PORT, LISTEN)
 
 var data = []
 var time = Date.now()
 
 setInterval(function() {
-    gc(); gc();
+    if (global.gc) { gc(); gc(); }
     clear();
     console.log(chart(data, { width: 120, height: 40 }));
     console.log('Sockets', sockets.size);
@@ -81,6 +83,5 @@ setInterval(function() {
     });
 
     console.log('Socket Buffer Size', (socketBufferSize / 1024 / 1024).toFixed(2), 'MB' )
-
-
+    console.log('Running TCP Server on port ' + LISTEN + ':' + PORT);
 }, 2000)
