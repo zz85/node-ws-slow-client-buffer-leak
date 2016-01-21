@@ -37,7 +37,7 @@ function handleRequest(request, response) {
 
     function fake_update() {
         var fake_data = FAKE + fake(4);
-        if (response) response.write(fake_data);
+        if (response) response.write(Buffer(fake_data));
 
         var timeout = 2000;
 
