@@ -11,6 +11,7 @@
   "dependencies": {
     "chart": "jstrace/chart",
     "clear": "0.0.1",
+    "uws": "^0.13.0",
     "ws": "^1.0.1"
   }
 }

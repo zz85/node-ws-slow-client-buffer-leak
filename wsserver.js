@@ -1,5 +1,5 @@
-var PORT = 3000;
-var WebSocketServer = require('ws').Server
+var PORT = 9000;
+var WebSocketServer = require('uws').Server
   , wss = new WebSocketServer({ port: PORT });
 
 var chart = require('chart');

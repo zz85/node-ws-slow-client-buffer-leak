@@ -7,8 +7,12 @@ if (process.argv.length < 3) {
 
 var target = process.argv[2];
 
-var port = target[1];
-var host = target[0];
+console.log('target', target);
+
+var parts = target.split(':');
+
+var port = parts[1];
+var host = parts[0];
 
 var connections =  +process.argv[3] || 100;
 
